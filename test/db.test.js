@@ -2,10 +2,12 @@
 
 const uuid = require("uuid");
 
-const db = require("../src/db.js");
+const Database = require("../src/db.js");
 
 describe("Basic database operations", () => {
     test("Positive db access scenario ", () => {
+        let db = new Database();
+
         // create
         const key = db.create({ x: 1, y: 2 });
         expect(uuid.validate(key)).toBeTruthy();
