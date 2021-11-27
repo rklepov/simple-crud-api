@@ -31,7 +31,7 @@ describe("Basic database operations", () => {
         expect(b).toBe(22);
 
         // delete
-        let { deleted } = db.remove(key);
+        let { deleted } = db.delete(key);
         expect(deleted).toBeTruthy();
 
         // list

@@ -32,7 +32,7 @@ class Database {
         }
     }
 
-    remove(key) {
+    delete(key) {
         return { deleted: this.#db.delete(key) };
     }
 
