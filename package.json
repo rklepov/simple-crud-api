@@ -20,7 +20,8 @@
     "scripts": {
         "test": "jest",
         "test:coverage": "jest --coverage",
-        "lint": "eslint **/*.js"
+        "lint": "eslint **/*.js",
+        "start:dev": "nodemon"
     },
     "repository": {
         "type": "git",
