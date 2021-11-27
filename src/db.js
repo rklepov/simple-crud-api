@@ -37,7 +37,7 @@ class Database {
     }
 
     ls() {
-        return [...this.#db.values()];
+        return [...this.#db.entries()].map(([id, obj]) => ({ id, ...obj }));
     }
 }
 
