@@ -38,6 +38,11 @@ class PeopleRegistryHandler {
             return validator.response;
         }
 
+        // Special request to model 500 internal server error response
+        if (obj["name"] === "Harry Potter") {
+            throw new Error("Expelliarmus!");
+        }
+
         let key = this.#db.create(obj);
 
         return HTTPResponse.Created({ id: key });
