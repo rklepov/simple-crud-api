@@ -40,6 +40,7 @@ async function start(opts) {
             if (!(contentType === "application/json")) {
                 HTTPResponse.BadRequest("Unsupported request content type", {
                     "content-type": contentType,
+                    expected: "application/json",
                 }).sendTo(res);
                 return;
             }
