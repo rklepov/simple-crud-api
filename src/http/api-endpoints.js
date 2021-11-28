@@ -1,6 +1,7 @@
 // api-endpoints.js
 
 const HTTPResponse = require("./responses.js");
+const { RequestValidator } = require("./validators.js");
 
 class PeopleRegistryHandler {
     #db = null;
@@ -9,13 +10,18 @@ class PeopleRegistryHandler {
         this.#db = db;
     }
 
-    get(path) {
+    get(validator, path) {
+        // list all records
         if (0 == path.length) {
             return HTTPResponse.OK(this.#db.ls());
         }
 
-        // TODO: extra items in the path -> HTTPResponse.NotFound
-        // TODO: invalid key -> HTTPResponse.BadRequest
+        // extra items in the path -> HTTPResponse.NotFound
+        // invalid key -> HTTPResponse.BadRequest
+        if (!(validator.checkPath(1, 1) && validator.checkId())) {
+            return validator.response;
+        }
+
         let key = path[0];
         let { hasValue, value } = this.#db.read(key);
         if (hasValue) {
@@ -25,20 +31,32 @@ class PeopleRegistryHandler {
         }
     }
 
-    post(path, obj) {
-        // TODO: extra items in the path -> HTTPResponse.NotFound
-        // TODO: invalid key -> HTTPResponse.BadRequest
-        // TODO: json validation -> HTTPResponse.BadRequest
+    post(validator, path, obj) {
+        // extra items in the path -> HTTPResponse.NotFound
+        // not all fields present -> HTTPResponse.BadRequest
+        if (!(validator.checkPath(0, 0) && validator.allFieldsPresent(["name", "age", "hobbies"]))) {
+            return validator.response;
+        }
 
         let key = this.#db.create(obj);
 
         return HTTPResponse.Created({ id: key });
     }
 
-    put(path, obj) {
-        // TODO: extra items in the path -> HTTPResponse.NotFound
-        // TODO: invalid key -> HTTPResponse.BadRequest
-        // TODO: json validation -> HTTPResponse.BadRequest
+    put(validator, path, obj) {
+        // extra items in the path -> HTTPResponse.NotFound
+        // invalid key -> HTTPResponse.BadRequest
+        // not all fields present -> HTTPResponse.BadRequest
+        if (
+            !(
+                validator.checkPath(1, 1) &&
+                validator.checkId() &&
+                validator.allFieldsPresent(["name", "age", "hobbies"])
+            )
+        ) {
+            return validator.response;
+        }
+
         let key = path[0];
         let { updated, value } = this.#db.update(key, obj);
         if (updated) {
@@ -48,10 +66,13 @@ class PeopleRegistryHandler {
         }
     }
 
-    patch(path, obj) {
-        // TODO: extra items in the path -> HTTPResponse.NotFound
-        // TODO: invalid key -> HTTPResponse.BadRequest
-        // TODO: json validation -> HTTPResponse.BadRequest
+    patch(validator, path, obj) {
+        // extra items in the path -> HTTPResponse.NotFound
+        // invalid key -> HTTPResponse.BadRequest
+        if (!(validator.checkPath(1, 1) && validator.checkId())) {
+            return validator.response;
+        }
+
         let key = path[0];
         let { hasValue, value } = this.#db.read(key);
         if (hasValue) {
@@ -63,9 +84,13 @@ class PeopleRegistryHandler {
         }
     }
 
-    delete(path) {
-        // TODO: extra items in the path -> HTTPResponse.NotFound
-        // TODO: invalid key -> HTTPResponse.BadRequest
+    delete(validator, path) {
+        // extra items in the path -> HTTPResponse.NotFound
+        // invalid key -> HTTPResponse.BadRequest
+        if (!(validator.checkPath(1, 1) && validator.checkId())) {
+            return validator.response;
+        }
+
         let key = path[0];
         let { deleted } = this.#db.delete(key);
         if (deleted) {
@@ -85,7 +110,8 @@ class PeopleRegistryHandler {
         };
         let handler = supportedMethods[method];
         if (handler) {
-            return handler.call(this, path, obj);
+            let validator = new RequestValidator(method, path, obj);
+            return handler.call(this, validator, path, obj);
         } else {
             return HTTPResponse.MethodNotAllowed("Method not supported", { method });
         }
