@@ -22,20 +22,23 @@ async function start(opts) {
             let method = req.method;
             let contentType = req.headers["content-type"];
             let url = new URL(req.url, `http://${req.headers.host}`);
-            let path = url.pathname.split("/");
 
-            console.log(`[${new Date().toUTCString()}]`, `Request header {${method}}, {${contentType}}, [${path}]`);
+            console.log(
+                `[${new Date().toUTCString()}]`,
+                `Request header ${method}, { ${contentType} }, [ ${url.pathname} ]`
+            );
 
             // checking the endpoint
+            let path = url.pathname.split("/");
             let endpoint = routes[path[1]];
             if (!endpoint) {
-                new HTTPResponse.NotFound("The resource doesn't exist on the server", { path }).sendTo(res);
+                HTTPResponse.NotFound("The resource doesn't exist on the server", { path }).sendTo(res);
                 return;
             }
 
             // checking supported content type
             if (!(contentType === "application/json")) {
-                new HTTPResponse.BadRequest("Unsupported request content type", {
+                HTTPResponse.BadRequest("Unsupported request content type", {
                     "content-type": contentType,
                 }).sendTo(res);
                 return;
@@ -53,11 +56,11 @@ async function start(opts) {
             console.error(`[${new Date().toUTCString()}]`, e);
 
             if (e instanceof SyntaxError) {
-                new HTTPResponse.BadRequest("JSON parse failed", { [e.constructor.name]: e.message }).sendTo(res);
+                HTTPResponse.BadRequest("JSON parse failed", { [e.constructor.name]: e.message }).sendTo(res);
                 return;
             }
 
-            new HTTPResponse.InternalError("Internal server error", { [e.constructor.name]: e.message }).sendTo(res);
+            HTTPResponse.InternalError("Internal server error", { [e.constructor.name]: e.message }).sendTo(res);
             // re-throwing the error will cause the server to stop
             // throw e;
         }

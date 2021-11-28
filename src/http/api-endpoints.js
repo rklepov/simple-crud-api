@@ -11,7 +11,7 @@ class PeopleRegistryHandler {
 
     get(path) {
         if (0 == path.length) {
-            return new HTTPResponse.OK(this.#db.ls());
+            return HTTPResponse.OK(this.#db.ls());
         }
 
         // TODO: extra items in the path -> HTTPResponse.NotFound
@@ -19,9 +19,9 @@ class PeopleRegistryHandler {
         let key = path[0];
         let { hasValue, value } = this.#db.read(key);
         if (hasValue) {
-            return new HTTPResponse.OK(value);
+            return HTTPResponse.OK(value);
         } else {
-            return new HTTPResponse.NotFound("Person not found", { id: key });
+            return HTTPResponse.NotFound("Person not found", { id: key });
         }
     }
 
@@ -32,7 +32,7 @@ class PeopleRegistryHandler {
 
         let key = this.#db.create(obj);
 
-        return new HTTPResponse.Created({ id: key });
+        return HTTPResponse.Created({ id: key });
     }
 
     put(path, obj) {
@@ -42,9 +42,9 @@ class PeopleRegistryHandler {
         let key = path[0];
         let { updated, value } = this.#db.update(key, obj);
         if (updated) {
-            return new HTTPResponse.OK(value);
+            return HTTPResponse.OK(value);
         } else {
-            return new HTTPResponse.NotFound("Person not found", { id: key });
+            return HTTPResponse.NotFound("Person not found", { id: key });
         }
     }
 
@@ -57,9 +57,9 @@ class PeopleRegistryHandler {
         if (hasValue) {
             value = { ...value, ...obj };
             this.#db.update(key, value);
-            return new HTTPResponse.OK(value);
+            return HTTPResponse.OK(value);
         } else {
-            return new HTTPResponse.NotFound("Person not found", { id: key });
+            return HTTPResponse.NotFound("Person not found", { id: key });
         }
     }
 
@@ -69,9 +69,9 @@ class PeopleRegistryHandler {
         let key = path[0];
         let { deleted } = this.#db.delete(key);
         if (deleted) {
-            return new HTTPResponse.NoContent();
+            return HTTPResponse.NoContent();
         } else {
-            return new HTTPResponse.NotFound("Person not found", { id: key });
+            return HTTPResponse.NotFound("Person not found", { id: key });
         }
     }
 
@@ -87,7 +87,7 @@ class PeopleRegistryHandler {
         if (handler) {
             return handler.call(this, path, obj);
         } else {
-            return new HTTPResponse.MethodNotAllowed("Method not supported", { method });
+            return HTTPResponse.MethodNotAllowed("Method not supported", { method });
         }
     }
 }

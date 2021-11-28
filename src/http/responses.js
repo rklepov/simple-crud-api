@@ -1,4 +1,4 @@
-// response.js
+// responses.js
 //
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 //
@@ -35,30 +35,7 @@ class SuccessfulResponse extends Response {
     }
 
     _body() {
-        // return { ...super._body(), ...this.#object };
         return this.#object;
-    }
-}
-
-class OK extends SuccessfulResponse {
-    constructor(obj) {
-        super(200, obj);
-    }
-}
-
-class Created extends SuccessfulResponse {
-    constructor(obj) {
-        super(201, obj);
-    }
-}
-
-class NoContent extends SuccessfulResponse {
-    constructor() {
-        super(204);
-    }
-
-    _body() {
-        return {};
     }
 }
 
@@ -91,24 +68,6 @@ class ClientError extends ErrorResponse {
     }
 }
 
-class BadRequest extends ClientError {
-    constructor(msg, details) {
-        super(400, msg, details);
-    }
-}
-
-class NotFound extends ClientError {
-    constructor(msg, details) {
-        super(404, msg, details);
-    }
-}
-
-class MethodNotAllowed extends ClientError {
-    constructor(msg, details) {
-        super(405, msg, details);
-    }
-}
-
 // HTTP 500 ////////////////////////////////////////////////////////////////////
 
 class ServerError extends ErrorResponse {
@@ -117,22 +76,16 @@ class ServerError extends ErrorResponse {
     }
 }
 
-class InternalError extends ServerError {
-    constructor(msg, details) {
-        super(500, msg, details);
-    }
-}
-
 module.exports = {
-    OK,
-    Created,
-    NoContent,
+    OK: (obj) => new SuccessfulResponse(200, obj),
+    Created: (obj) => new SuccessfulResponse(201, obj),
+    NoContent: () => new SuccessfulResponse(204),
 
-    BadRequest,
-    NotFound,
-    MethodNotAllowed,
+    BadRequest: (msg, details) => new ClientError(400, msg, details),
+    NotFound: (msg, details) => new ClientError(404, msg, details),
+    MethodNotAllowed: (msg, details) => new ClientError(405, msg, details),
 
-    InternalError,
+    InternalError: (msg, details) => new ServerError(500, msg, details),
 };
 
 //__EOF__
