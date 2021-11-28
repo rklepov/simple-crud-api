@@ -51,8 +51,12 @@ async function start(opts) {
 
             console.log(`[${new Date().toUTCString()}]`, `Request body ${body.buffer}`);
 
+            let obj;
             // processing the request
-            endpoint.dispatch(method, path.slice(2), JSON.parse(body.buffer)).sendTo(res);
+            if (method !== "GET") {
+                obj = JSON.parse(body.buffer);
+            }
+            endpoint.dispatch(method, path.slice(2), obj).sendTo(res);
         } catch (e) {
             console.error(`[${new Date().toUTCString()}]`, e);
 
