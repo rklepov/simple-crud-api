@@ -37,8 +37,8 @@ async function start(opts) {
             }
 
             // checking supported content type
-            if (!(contentType === "application/json")) {
-                HTTPResponse.BadRequest("Unsupported request content type", {
+            if (method !== "GET" && contentType !== "application/json") {
+                HTTPResponse.BadRequest(`Unsupported request content type for ${method}`, {
                     "content-type": contentType,
                     expected: "application/json",
                 }).sendTo(res);
