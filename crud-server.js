@@ -2,7 +2,7 @@
 
 require("dotenv").config();
 
-const main = require("./src/server.js");
+const { main } = require("./src/server.js");
 
 main([...process.argv], process.env);
 
