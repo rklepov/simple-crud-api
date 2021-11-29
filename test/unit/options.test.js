@@ -1,6 +1,6 @@
 // options.test.js
 
-const options = require("../src/options.js");
+const options = require("../../src/options.js");
 
 describe("Server port number", () => {
     describe("When passed via the command line", () => {
