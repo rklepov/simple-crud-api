@@ -84,6 +84,10 @@ class Server {
             });
         });
     }
+
+    get httpServer() {
+        return this.#server;
+    }
 }
 
 async function main(argv, env) {

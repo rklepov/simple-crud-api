@@ -10,24 +10,20 @@ const { Server } = require("../../src/server.js");
 const server = new Server({ port: process.env.PORT || 3000 });
 
 describe("Scenario 1", () => {
-    let serverAddress = "";
-
-    beforeAll(async () => {
-        let port = await server.start();
-        serverAddress = `localhost:${port}`;
-    });
+    beforeAll(() => server.start());
 
     afterAll(() => server.stop());
 
     test("GET all", (done) => {
-        supertest(serverAddress)
+        supertest(server.httpServer)
             .get("/person")
             .expect("Content-Type", /json/)
             .expect(200)
             .then((response) => {
                 expect(response.body).toEqual([]);
                 done();
-            });
+            })
+            .catch((e) => done(e));
     });
 
     let id;
@@ -38,7 +34,7 @@ describe("Scenario 1", () => {
     };
 
     test("POST new", (done) => {
-        supertest(serverAddress)
+        supertest(server.httpServer)
             .post("/person")
             .send(person)
             .expect("Content-Type", /json/)
@@ -47,11 +43,12 @@ describe("Scenario 1", () => {
                 expect(uuid.validate(response.body.id)).toBe(true);
                 id = response.body.id;
                 done();
-            });
+            })
+            .catch((e) => done(e));
     });
 
     test("GET by id", (done) => {
-        supertest(serverAddress)
+        supertest(server.httpServer)
             .get(`/person/${id}`)
             .expect("Content-Type", /json/)
             .expect(200)
@@ -60,7 +57,8 @@ describe("Scenario 1", () => {
                 expect(response.body.age).toBe(person.age);
                 expect(response.body.hobbies).toEqual(person.hobbies);
                 done();
-            });
+            })
+            .catch((e) => done(e));
     });
 
     test("PUT by id", (done) => {
@@ -70,7 +68,7 @@ describe("Scenario 1", () => {
             hobbies: ["smoking", "parties", "rings"],
         };
 
-        supertest(serverAddress)
+        supertest(server.httpServer)
             .put(`/person/${id}`)
             .send(person)
             .expect("Content-Type", /json/)
@@ -80,28 +78,32 @@ describe("Scenario 1", () => {
                 expect(response.body.age).toBe(person.age);
                 expect(response.body.hobbies).toEqual(person.hobbies);
                 done();
-            });
+            })
+            .catch((e) => done(e));
     });
 
     test("DELETE by id", (done) => {
-        supertest(serverAddress)
+        supertest(server.httpServer)
             .delete(`/person/${id}`)
             .expect(204)
             .then((response) => {
+                // TODO: this is actually case-sensitive here
                 expect(response.headers).not.toHaveProperty("content-type");
                 done();
-            });
+            })
+            .catch((e) => done(e));
     });
 
     test("GET deleted", (done) => {
-        supertest(serverAddress)
+        supertest(server.httpServer)
             .get(`/person/${id}`)
             .expect("Content-Type", /json/)
             .expect(404)
             .then((response) => {
                 expect(response.body).toHaveProperty("message");
                 done();
-            });
+            })
+            .catch((e) => done(e));
     });
 });
 
