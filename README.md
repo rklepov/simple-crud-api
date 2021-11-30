@@ -49,6 +49,8 @@ For example:
 ```
 ⚠️ There's a small problem with **DELETE** request in this version: you need to pass `"content-type": "application/json"` and any valid JSON in the request body (like the simplest `{}`) to make it actually work. This is due to the lack of testing unfortunately ☹️
 
+⚠️ I also don't perform thorough validation of the person object passed with POST and PUT requests: just check that the 3 required fields from the task description are present but don't check their types. My point here is that implementing good schema validation logic is far beyond the scope of this educational task. And simply testing the types of the object properties with certain names is just not interesting and again not directly related to the purpose of the exercise. So I deliberately decided to omit this piece.
+
 💡 Try making a POST request to `http://localhost:<port>/person` with `"name": "Harry Potter"` to check *500 Internal server error* scenario.
 
 6. Remember that the database is in-memory meaning that its contents is lost with the server restart.
@@ -57,4 +59,4 @@ For example:
 Unfortunately I didn't have enough time to implement end-to-end tests in this version ☹️
 
 ----
-*UPD:* I've actually made the new version where I added the [tests](https://github.com/rklepov/simple-crud-api/blob/task/03-simple-crud-api-updates/test/api-e2e/server.test.js) as well as addressed the issue with DELETE request. I've submitted the changes to the [other branch](https://github.com/rklepov/simple-crud-api/tree/task/03-simple-crud-api-updates) in this repository (*N.B.*: this is for my own reference only, I'm not asking to review that because the changes were submitted after the deadline).
+*UPD:* I've actually made a new version where I added the [tests](https://github.com/rklepov/simple-crud-api/blob/task/03-simple-crud-api-updates/test/api-e2e/server.test.js) as well as addressed the issue with DELETE request. I've submitted the changes to the [other branch](https://github.com/rklepov/simple-crud-api/tree/task/03-simple-crud-api-updates) in this repository (*N.B.*: this is for my own reference only, I'm not asking to review that because the changes were submitted after the deadline).
