@@ -56,7 +56,6 @@ For example:
 6. Remember that the database is in-memory meaning that its contents is lost with the server restart.
 
 ### Testing 
-Unfortunately I didn't have enough time to implement end-to-end tests in this version ☹️
-
-----
-*UPD:* I've actually made a new version where I added the [tests](https://github.com/rklepov/simple-crud-api/blob/task/03-simple-crud-api-updates/test/api-e2e/server.test.js) as well as addressed the issue with DELETE request. I've submitted the changes to the [other branch](https://github.com/rklepov/simple-crud-api/tree/task/03-simple-crud-api-updates) in this repository (*N.B.*: this is for my own reference only, I'm not asking to review that because the changes were submitted after the deadline).
+```
+npm run test
+```
