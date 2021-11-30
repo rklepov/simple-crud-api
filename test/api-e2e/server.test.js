@@ -9,10 +9,32 @@ const { Server } = require("../../src/server.js");
 
 const server = new Server({ port: process.env.PORT || 3000 });
 
-describe("Scenario 1", () => {
-    beforeAll(() => server.start());
+expect.extend({
+    // checks if the passed HTTP header is present in the message. The check is case-insensitive.
+    toHaveHttpHeader(message, expected) {
+        let lowerExpected = expected.toLowerCase();
+        const pass = Object.keys(message.headers)
+            .map((x) => x.toLowerCase())
+            .includes(lowerExpected);
+        return {
+            message: () =>
+                `expected ${message.constructor.name}` + (pass ? " not " : " ") + `to have '${lowerExpected}' header`,
+            pass,
+        };
+    },
+});
 
-    afterAll(() => server.stop());
+describe("Scenario 1: normal flow", () => {
+    beforeAll(() => {
+        // suppressing server output to console
+        jest.spyOn(console, "log").mockImplementation(() => {});
+        return server.start();
+    });
+
+    afterAll(async () => {
+        await server.stop();
+        jest.restoreAllMocks();
+    });
 
     test("GET all", (done) => {
         supertest(server.httpServer)
@@ -87,8 +109,8 @@ describe("Scenario 1", () => {
             .delete(`/person/${id}`)
             .expect(204)
             .then((response) => {
-                // TODO: this is actually case-sensitive here
-                expect(response.headers).not.toHaveProperty("content-type");
+                expect(response).not.toHaveHttpHeader("content-type");
+                expect(response.body).toEqual({});
                 done();
             })
             .catch((e) => done(e));
