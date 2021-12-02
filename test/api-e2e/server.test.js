@@ -86,7 +86,7 @@ describe("Scenario 1: normal flow", () => {
     test("PUT by id", (done) => {
         person = {
             name: "Bilbo Baggins",
-            age: "129",
+            age: 129,
             hobbies: ["smoking", "parties", "rings"],
         };
 
@@ -190,6 +190,20 @@ describe("Scenario 2: errors", () => {
     });
 
     // POST
+    test("POST no content-type", (done) => {
+        supertest(server.httpServer)
+            .post("/person")
+            .expect("Content-Type", /json/)
+            .expect(400)
+            .then((response) => {
+                expect(response.body).toHaveProperty("message");
+                expect(response.body.message).toBe("Unsupported request content type for POST");
+                expect(response.body.details).toEqual({ expected: "application/json" });
+                done();
+            })
+            .catch((e) => done(e));
+    });
+
     test("POST not all mandatory fields present", (done) => {
         supertest(server.httpServer)
             .post("/person")
