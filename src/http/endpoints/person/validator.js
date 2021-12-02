@@ -33,8 +33,9 @@ class PersonRequestValidator {
 
     checkContentType(expected) {
         const contentTypeKey = "content-type";
+        console.log(this.#headers);
         let contentTypeVal = this.#headers[contentTypeKey];
-        if (!contentTypeVal.match(new RegExp(expected))) {
+        if (!contentTypeVal || !contentTypeVal.match(new RegExp(expected))) {
             this.#response = HTTPResponse.BadRequest(`Unsupported request content type for ${this.#method}`, {
                 [contentTypeKey]: contentTypeVal,
                 expected,
