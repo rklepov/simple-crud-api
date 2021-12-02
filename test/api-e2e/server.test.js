@@ -319,4 +319,157 @@ describe("Scenario 2: errors", () => {
     });
 });
 
+describe("Scenario 3: working with several objects", () => {
+    beforeAll(() => {
+        // suppressing server output to console
+        jest.spyOn(console, "log").mockImplementation(() => {});
+        return server.start();
+    });
+
+    afterAll(async () => {
+        await server.stop();
+        jest.restoreAllMocks();
+    });
+
+    let ids = [];
+    const NUM_OBJECTS = 3;
+
+    const testNumberObjects = (done) => {
+        supertest(server.httpServer)
+            .get("/person")
+            .expect("Content-Type", /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).toBeInstanceOf(Array);
+                expect(response.body.length).toBe(ids.length);
+                expect(ids.every((id, ix) => response.body[ix].id === id)).toBe(true);
+                done();
+            })
+            .catch((e) => done(e));
+    };
+
+    test.each([...Array(NUM_OBJECTS).keys()])(`[POST] Create a new object(s)`, (n, done) => {
+        supertest(server.httpServer)
+            .post("/person")
+            .send({
+                name: `Person #${n}`,
+                age: 20 + n,
+                hobbies: [`hobby ${n}`],
+            })
+            .expect("Content-Type", /json/)
+            .expect(201)
+            .then((response) => {
+                expect(response.body).toHaveProperty("id");
+                ids[n] = response.body.id;
+                done();
+            })
+            .catch((e) => done(e));
+    });
+
+    test(`[GET] ensure ${NUM_OBJECTS} object(s) created`, testNumberObjects);
+
+    test("[GET] check the 2nd object", (done) => {
+        supertest(server.httpServer)
+            .get(`/person/${ids[1]}`)
+            .expect("Content-Type", /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).toHaveProperty("name");
+                expect(response.body.name).toBe("Person #1");
+                expect(response.body).toHaveProperty("age");
+                expect(response.body.age).toBe(21);
+                expect(response.body).toHaveProperty("hobbies");
+                expect(response.body.hobbies).toEqual(["hobby 1"]);
+                done();
+            })
+            .catch((e) => done(e));
+    });
+
+    let newPerson1 = {
+        name: "Bilbo Baggins",
+        age: 129,
+        hobbies: ["smoking", "parties", "rings"],
+    };
+
+    test("[PUT] change the 2nd object", (done) => {
+        supertest(server.httpServer)
+            .put(`/person/${ids[1]}`)
+            .send(newPerson1)
+            .expect("Content-Type", /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body.name).toBe(newPerson1.name);
+                expect(response.body.age).toBe(newPerson1.age);
+                expect(response.body.hobbies).toEqual(newPerson1.hobbies);
+                done();
+            })
+            .catch((e) => done(e));
+    });
+
+    test("[GET] check the updated 2nd object", (done) => {
+        supertest(server.httpServer)
+            .get(`/person/${ids[1]}`)
+            .expect("Content-Type", /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).toHaveProperty("name");
+                expect(response.body.name).toBe(newPerson1.name);
+                expect(response.body).toHaveProperty("age");
+                expect(response.body.age).toBe(newPerson1.age);
+                expect(response.body).toHaveProperty("hobbies");
+                expect(response.body.hobbies).toEqual(newPerson1.hobbies);
+                done();
+            })
+            .catch((e) => done(e));
+    });
+
+    test("[DELETE] delete the first object", (done) => {
+        supertest(server.httpServer)
+            .delete(`/person/${ids[0]}`)
+            .expect(204)
+            .then((response) => {
+                expect(response).not.toHaveHttpHeader("content-type");
+                expect(response.body).toEqual({});
+                ids.splice(0, 1);
+                done();
+            })
+            .catch((e) => done(e));
+    });
+
+    test(`[GET] ensure ${NUM_OBJECTS - 1} object(s) remaining`, testNumberObjects);
+
+    test("[DELETE] delete the last object", (done) => {
+        supertest(server.httpServer)
+            .delete(`/person/${ids.slice(-1)}`)
+            .expect(204)
+            .then((response) => {
+                expect(response).not.toHaveHttpHeader("content-type");
+                expect(response.body).toEqual({});
+                ids.splice(-1, 1);
+                done();
+            })
+            .catch((e) => done(e));
+    });
+
+    test(`[GET] ensure ${NUM_OBJECTS - 2} object(s) remaining`, testNumberObjects);
+
+    test("[GET] check the last remaining object", (done) => {
+        supertest(server.httpServer)
+            .get(`/person/${ids[0]}`)
+            .expect("Content-Type", /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).toHaveProperty("name");
+                expect(response.body.name).toBe(newPerson1.name);
+                expect(response.body).toHaveProperty("age");
+                expect(response.body.age).toBe(newPerson1.age);
+                expect(response.body).toHaveProperty("hobbies");
+                expect(response.body.hobbies).toEqual(newPerson1.hobbies);
+                done();
+            })
+            .catch((e) => done(e));
+    });
+});
+
+
 //__EOF__
