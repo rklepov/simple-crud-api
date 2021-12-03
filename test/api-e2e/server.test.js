@@ -62,8 +62,17 @@ describe("Scenario 1: normal flow", () => {
             .expect("Content-Type", /json/)
             .expect(201)
             .then((response) => {
+                expect(response.body).toHaveProperty("id");
                 expect(uuid.validate(response.body.id)).toBe(true);
                 id = response.body.id;
+
+                expect(response.body).toHaveProperty("name");
+                expect(response.body.name).toBe(person.name);
+                expect(response.body).toHaveProperty("age");
+                expect(response.body.age).toBe(person.age);
+                expect(response.body).toHaveProperty("hobbies");
+                expect(response.body.hobbies).toEqual(person.hobbies);
+
                 done();
             })
             .catch((e) => done(e));
@@ -349,18 +358,29 @@ describe("Scenario 3: working with several objects", () => {
     };
 
     test.each([...Array(NUM_OBJECTS).keys()])(`[POST] Create a new object(s)`, (n, done) => {
+        let person = {
+            name: `Person #${n}`,
+            age: 20 + n,
+            hobbies: [`hobby ${n}`],
+        };
+
         supertest(server.httpServer)
             .post("/person")
-            .send({
-                name: `Person #${n}`,
-                age: 20 + n,
-                hobbies: [`hobby ${n}`],
-            })
+            .send(person)
             .expect("Content-Type", /json/)
             .expect(201)
             .then((response) => {
                 expect(response.body).toHaveProperty("id");
+                expect(uuid.validate(response.body.id)).toBe(true);
                 ids[n] = response.body.id;
+
+                expect(response.body).toHaveProperty("name");
+                expect(response.body.name).toBe(person.name);
+                expect(response.body).toHaveProperty("age");
+                expect(response.body.age).toBe(person.age);
+                expect(response.body).toHaveProperty("hobbies");
+                expect(response.body.hobbies).toEqual(person.hobbies);
+
                 done();
             })
             .catch((e) => done(e));

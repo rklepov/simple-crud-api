@@ -59,7 +59,7 @@ class PeopleRegistryHandler {
 
         let id = this.#db.create(obj);
 
-        return HTTPResponse.Created({ id });
+        return HTTPResponse.Created({ id, ...obj });
     }
 
     put(validator, body) {
