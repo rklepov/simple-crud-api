@@ -2,7 +2,7 @@
 
 const uuid = require("uuid");
 
-const Database = require("../src/db.js");
+const Database = require("../../src/db.js");
 
 describe("Basic database operations", () => {
     test("Positive db access scenario ", () => {

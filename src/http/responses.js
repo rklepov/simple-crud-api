@@ -5,6 +5,7 @@
 
 class Response {
     #status = null;
+    #contentType = "application/json";
 
     constructor(status) {
         this.#status = status;
@@ -12,7 +13,9 @@ class Response {
 
     sendTo(serverResponse) {
         serverResponse.statusCode = this.#status;
-        serverResponse.setHeader("content-type", "application/json");
+        if (this.#contentType) {
+            serverResponse.setHeader("content-type", this.#contentType);
+        }
         return serverResponse.end(JSON.stringify(this.getBody()));
     }
 
@@ -22,6 +25,11 @@ class Response {
 
     _body() {
         return {};
+    }
+
+    setContentType(contentType) {
+        this.#contentType = contentType;
+        return this;
     }
 }
 
@@ -79,7 +87,7 @@ class ServerError extends ErrorResponse {
 module.exports = {
     OK: (obj) => new SuccessfulResponse(200, obj),
     Created: (obj) => new SuccessfulResponse(201, obj),
-    NoContent: () => new SuccessfulResponse(204),
+    NoContent: () => new SuccessfulResponse(204).setContentType(""),
 
     BadRequest: (msg, details) => new ClientError(400, msg, details),
     NotFound: (msg, details) => new ClientError(404, msg, details),
