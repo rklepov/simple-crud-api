@@ -47,9 +47,7 @@ For example:
     ]
 }
 ```
-⚠️ There's a small problem with **DELETE** request in this version: you need to pass `"content-type": "application/json"` and any valid JSON in the request body (like the simplest `{}`) to make it actually work. This is due to the lack of testing unfortunately ☹️
-
-⚠️ I also don't perform thorough validation of the person object passed with POST and PUT requests: just check that the 3 required fields from the task description are present but don't check their types. My point here is that implementing good schema validation logic is far beyond the scope of this educational task. And simply testing the types of the object properties with certain names is just not interesting and again not directly related to the purpose of the exercise. So I deliberately decided to omit this piece.
+⚠️ I don't perform thorough validation of the person object passed with POST and PUT requests: just check that the 3 required fields from the task description are present but don't check their types. My point here is that implementing good schema validation logic is far beyond the scope of this educational task. And simply testing the types of the object properties with certain names is just not interesting and again not directly related to the purpose of the exercise. So I deliberately decided to omit this piece.
 
 💡 Try making a POST request to `http://localhost:<port>/person` with `"name": "Harry Potter"` to check *500 Internal server error* scenario.
 
