@@ -1,0 +1,45 @@
+{
+    "dependencies": {
+        "cross-env": "^7.0.3",
+        "dotenv": "^10.0.0",
+        "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "@types/jest": "^27.0.3",
+        "eslint": "^8.3.0",
+        "eslint-plugin-jest": "^25.3.0",
+        "jest": "^27.3.1",
+        "nodemon": "^2.0.15",
+        "webpack": "^5.64.4",
+        "webpack-cli": "^4.9.1"
+    },
+    "name": "simple-crud-api",
+    "type": "commonjs",
+    "description": "RS School 2021Q4 NodeJS Course. Simple CRUD API.",
+    "version": "1.0.0",
+    "main": "crud-server.js",
+    "scripts": {
+        "test": "jest",
+        "test:coverage": "jest --coverage",
+        "lint": "eslint **/*.js",
+        "build": "webpack",
+        "start:dev": "nodemon",
+        "start:prod": "webpack && node dist/server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/rklepov/simple-crud-api.git"
+    },
+    "author": "Roman Klepov",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/rklepov/simple-crud-api/issues"
+    },
+    "homepage": "https://github.com/rklepov/simple-crud-api#readme",
+    "jest": {
+        "verbose": true,
+        "collectCoverageFrom": [
+            "src/**/*.js"
+        ]
+    }
+}
